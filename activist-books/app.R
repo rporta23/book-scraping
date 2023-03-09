@@ -2,7 +2,7 @@
 library(shiny)
 library(tidyverse)
 
-gr <- read_rds(here::here("goodreads.rda"))
+gr <- read_rds(here::here("data_all.rda"))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
