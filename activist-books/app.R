@@ -2,18 +2,41 @@
 library(shiny)
 library(tidyverse)
 
-gr <- read_rds(here::here("data_all.rda"))
+# read in data
+gr <- read_rds(here::here("data_categories.rda"))
+
+# list of categories
+categories <- c("All", "Place-Making", "Race", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
+                "Education", "Public Health", "Religion", "Arts", "Government")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Activist Books"),
+    titlePanel("Activist Memoirs Database"),
 
-    mainPanel(width = 12,
-              DT::dataTableOutput("books_table"),
-              em("Data Sources: https://www.goodreads.com/list/show/76908.Activist_memoirs")
-              )
+    sidebarLayout(
+      sidebarPanel(
+        radioButtons(
+          inputId = "category",
+          label = "Filter Category",
+          choices = categories,
+          selected = "All"
+        )
+      ),
+
+      mainPanel(width = 12,
+                DT::dataTableOutput("books_table"),
+                em("Data Sources:"), br(),
+                a("goodreads", href = "https://www.goodreads.com/list/show/76908.Activist_memoirs"), br(),
+                a("Amazon Best Sellers", href = "https://www.amazon.com/Best-Sellers-Books-Social-Activist-Biographies/zgbs/books/9681289011"), br(),
+                a("Parnassus Books", href = "https://www.parnassusbooks.net/browse/book/BIO032000"), br(),
+                p("Source code for this app: https://github.com/rporta23/book-scraping")
+
+
+      )
+    )
+
 
     # # Sidebar with a slider input for number of bins
     # sidebarLayout(
@@ -35,9 +58,13 @@ ui <- fluidPage(
 server <- function(input, output) {
 
     output$books_table <- DT::renderDataTable({
-      gr
-      #gr |>
-        #filter(map_lgl(gr$genres, ~`%in%`("Race", .x)))
+      if(input$category != "All"){
+        gr |>
+          filter(category == input$category)
+      }else {
+        gr
+      }
+
 
     })
 }

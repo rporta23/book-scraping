@@ -209,3 +209,89 @@ write_rds(data_all2, "data_all2.rda")
 ## read in all data
 data_all_read <- read_rds(here::here("data_all2.rda"))
 
+
+amazon_data <- data_all |>
+  filter(map_lgl(genres, is_null))
+
+gr_data <- data_all |>
+  filter(!map_lgl(genres, is_null)) |>
+  mutate(authors = as.list(authors))
+
+amazon_data2 <- amazon_data |>
+  group_by(titles) |>
+  summarise(count = n())
+
+amazon_repeats <- map_lgl(amazon_data$titles, ~`%in%`(.x, gr_data$titles))
+
+#### manually remove duplicates
+write_csv(amazon_data, "temp.csv")
+
+amazon_data_new <- read_csv("temp.csv") |>
+  mutate(authors = as.list(authors))
+
+data_norepeats <- gr_data |>
+  bind_rows(amazon_data_new) |>
+  bind_rows(data_p2)
+
+write_rds(data_norepeats, "data_all_norepeats.rda")
+
+data_norepeats <- read_rds("data_all_norepeats.rda")
+
+#### Defining categories
+
+# list of categories
+categories <- c("Place-Making", "Race", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
+                "Eduction", "Public Health", "Religion", "Arts", "Government")
+
+# keywords for each category
+pm_keys <- c("urbanism", "architecture", "design", "landscape")
+gov_keys <- c("public policy", "public affairs", "government", "campaign", "political", "police", "cop", "legal")
+race_keys <- c("civil rights", "segregation", "racism")
+w_keys <- c("women’s rights")
+dj_keys <- c("disability", "autism", "blind", "deaf", "wheelchair", "ableist", "ableism")
+lgbt_keys <- c("gay", "lesbian", "queer", "transgender")
+env_keys <- c("conservation", "environmentalism", "animal", "plant", "ecosystem", "ecology", "biosystem")
+ed_keys <- c("school", "education", "teacher", "student", "university")
+health_keys <- c("public health", "pandemic", "disease", "health care", "doctor", "nurse", "medical")
+rel_keys <- c("minister", "christian", "jesus", "religion", "church", "islam", "spirituality", "religious", "jewish", "judaism", "muslim", "hindu")
+arts_keys <- c("music", "dance", "performance", "creativity", "paint")
+
+# function to check if description contains category keywords
+check_keywords <- function(keys, description){
+  keys_in_description <- map_lgl(keys, ~str_detect(description, .x))
+  if(TRUE %in% keys_in_description){
+    return(TRUE)
+  }
+  else{
+    return(FALSE)
+  }
+}
+
+# function to define category given description
+define_category <- function(description){
+  description <- tolower(description)
+  category = case_when(
+    check_keywords(pm_keys, description) ~ "Place-Making",
+    check_keywords(gov_keys, description) ~ "Government",
+    check_keywords(race_keys, description) ~ "Race",
+    check_keywords(w_keys, description) ~ "Women's Rights",
+    check_keywords(dj_keys, description) ~ "Disability Justice",
+    check_keywords(lgbt_keys, description) ~ "LGBT",
+    check_keywords(env_keys, description) ~ "Environmentalism",
+    check_keywords(ed_keys, description) ~ "Education",
+    check_keywords(health_keys, description) ~ "Public Health",
+    check_keywords(rel_keys, description) ~ "Religion",
+    check_keywords(arts_keys, description) ~ "Arts",
+    TRUE ~ "Uncategorized"
+  )
+
+  return(category)
+}
+
+category <- map_chr(data_norepeats$descriptions, define_category)
+
+data_categories <- data_norepeats |>
+  mutate(category = category)
+
+write_rds(data_categories, "data_categories.rda")
+
