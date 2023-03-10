@@ -128,3 +128,84 @@ data_all <- bind_rows(gr, amazon_data)
 write_rds(data_all, "data_all.rda")
 
 data_all <- read_rds(here::here("data_all.rda"))
+
+#### parnassus scraping
+
+# links for each page
+p_urls <- c("https://www.parnassusbooks.net/browse/book/BIO032000",
+"https://www.parnassusbooks.net/browse/book/BIO032000?page=1",
+"https://www.parnassusbooks.net/browse/book/BIO032000?page=2",
+"https://www.parnassusbooks.net/browse/book/BIO032000?page=3",
+"https://www.parnassusbooks.net/browse/book/BIO032000?page=4"
+)
+
+test_url <- p_urls[5]
+
+get_links_p <- function(url) {
+  links <- url |>
+    rvest::read_html() |>
+    rvest::html_elements(".book-title a") |>
+    rvest::html_attr("href") %>%
+    paste0("https://www.parnassusbooks.net/", .)
+
+  return(links)
+}
+
+links_p <- map(p_urls, get_links_p)
+
+## all parnassus links
+links_p <- flatten_chr(links_p)
+
+get_title_p <- function(url){
+  title <- url |>
+    rvest::read_html() |>
+    rvest::html_elements(".page-title") |>
+    rvest::html_text()
+  return(title[[1]])
+}
+
+get_author_p <- function(url){
+  author <- url |>
+    rvest::read_html() |>
+    rvest::html_elements(".author a") |>
+    rvest::html_text()
+  return(author)
+}
+
+get_description_p <- function(url){
+  description <- url |>
+    rvest::read_html() |>
+    rvest::html_elements(".inner-tabs") |>
+    rvest::html_text()
+  return(description[[1]])
+}
+
+#test_url <- links_p[33]
+
+#t <- get_description_p(test_url)
+
+titles <- map(links_p, get_title_p)
+
+authors <- map(links_p, get_author_p)
+
+descriptions <- map(links_p, get_description_p)
+
+data_p <- tibble(titles = as.character(titles), authors, descriptions = as.character(descriptions),
+                 links = links_p, genres = rep(NA, 50)) |>
+  separate(titles, into = c("titles", "discard"), sep = " \\(") |>
+  select(-discard)
+
+repeats <- map_lgl(data_p$titles, ~`%in%`(.x, data_all$titles))
+
+data_p2 <- data_p |>
+  filter(!repeats)
+
+data_all2 <- data_all |>
+  mutate(authors = as.list(authors)) |>
+  bind_rows(data_p2)
+
+write_rds(data_all2, "data_all2.rda")
+
+## read in all data
+data_all_read <- read_rds(here::here("data_all2.rda"))
+
