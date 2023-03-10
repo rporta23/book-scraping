@@ -3,7 +3,9 @@ library(shiny)
 library(tidyverse)
 
 # read in data
-gr <- read_rds(here::here("data_categories.rda"))
+githubURL <- "https://github.com/rporta23/book-scraping/raw/main/data_categories.rda"
+gr <- readRDS(url(githubURL))
+#gr <- read_rds(here::here("data_categories.rda"))
 
 # list of categories
 categories <- c("All", "Place-Making", "Race", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
