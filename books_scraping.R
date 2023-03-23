@@ -314,3 +314,5 @@ data_cat4 <- data_cat3 |>
 n <- data_cat3 |>
   filter(category == "Women's Rights")
 
+write_rds(data_cat4, "data_categories.rda")
+
