@@ -240,18 +240,22 @@ data_norepeats <- read_rds("data_all_norepeats.rda")
 #### Defining categories
 
 # list of categories
-categories <- c("Place-Making", "Race", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
+categories <- c("Urbanism", "Race", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
                 "Eduction", "Public Health", "Religion", "Arts", "Government")
 
 # keywords for each category
 pm_keys <- c("urbanism", "architecture", "design", "landscape")
-gov_keys <- c("public policy", "public affairs", "government", "campaign", "political", "police", "cop", "legal")
-race_keys <- c("civil rights", "segregation", "racism")
-w_keys <- c("women’s rights")
+gov_keys <- c("public policy", "public affairs", "government", "political",
+              "police", "cop", "politics", "conviction", "totalitarian", "legislation")
+race_keys <- c("civil rights", "segregation", "racism", "slavery", "Civil War", "plantation")
+w_keys <- c("women’s rights", "women's liberation", "women's participation", "women's issues",
+            "women's right", "gutsy women", "women's movement", "feminist", "feminism", "macho world",
+            "cult of beauty", "women")
 dj_keys <- c("disability", "autism", "blind", "deaf", "wheelchair", "ableist", "ableism")
 lgbt_keys <- c("gay", "lesbian", "queer", "transgender")
-env_keys <- c("conservation", "environmentalism", "animal", "plant", "ecosystem", "ecology", "biosystem")
-ed_keys <- c("school", "education", "teacher", "student", "university")
+env_keys <- c("conservation", "environmentalism", "animal", "plant", "ecosystem", "ecology", "biosystem", "water crisis",
+              "environmental")
+ed_keys <- c("education", "teacher", "student", "university", "literacy")
 health_keys <- c("public health", "pandemic", "disease", "health care", "doctor", "nurse", "medical")
 rel_keys <- c("minister", "christian", "jesus", "religion", "church", "islam", "spirituality", "religious", "jewish", "judaism", "muslim", "hindu")
 arts_keys <- c("music", "dance", "performance", "creativity", "paint")
@@ -271,27 +275,42 @@ check_keywords <- function(keys, description){
 define_category <- function(description){
   description <- tolower(description)
   category = case_when(
-    check_keywords(pm_keys, description) ~ "Place-Making",
-    check_keywords(gov_keys, description) ~ "Government",
-    check_keywords(race_keys, description) ~ "Race",
-    check_keywords(w_keys, description) ~ "Women's Rights",
-    check_keywords(dj_keys, description) ~ "Disability Justice",
+    check_keywords(pm_keys, description) ~ "Urbanism",
     check_keywords(lgbt_keys, description) ~ "LGBT",
-    check_keywords(env_keys, description) ~ "Environmentalism",
-    check_keywords(ed_keys, description) ~ "Education",
+    check_keywords(race_keys, description) ~ "Race",
+    check_keywords(dj_keys, description) ~ "Disability Justice",
     check_keywords(health_keys, description) ~ "Public Health",
+    check_keywords(env_keys, description) ~ "Environmentalism",
+    check_keywords(w_keys, description) ~ "Women's Rights",
+    check_keywords(gov_keys, description) ~ "Government",
     check_keywords(rel_keys, description) ~ "Religion",
     check_keywords(arts_keys, description) ~ "Arts",
+    check_keywords(ed_keys, description) ~ "Education",
     TRUE ~ "Uncategorized"
   )
 
   return(category)
 }
 
-category <- map_chr(data_norepeats$descriptions, define_category)
+#category <- map_chr(data_norepeats$descriptions, define_category)
 
 data_categories <- data_norepeats |>
   mutate(category = category)
 
 write_rds(data_categories, "data_categories.rda")
+
+data_cat <- readRDS("data_categories.rda")
+
+data_cat2 <- data_cat[2:165,]
+
+category_new <- map_chr(data_cat2$descriptions, define_category)
+
+data_cat3 <- data_cat2 |>
+  mutate(category = category_new)
+
+data_cat4 <- data_cat3 |>
+  rename(title = titles, description = descriptions, link = links)
+
+n <- data_cat3 |>
+  filter(category == "Women's Rights")
 
