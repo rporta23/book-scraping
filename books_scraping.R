@@ -250,7 +250,7 @@ gov_keys <- c("public policy", "public affairs", "government", "political",
 race_keys <- c("civil rights", "segregation", "racism", "slavery", "Civil War", "plantation", "merican indian")
 w_keys <- c("women’s rights", "women's liberation", "women's participation", "women's issues",
             "women's right", "gutsy women", "women's movement", "feminist", "feminism", "macho world",
-            "cult of beauty", "women", "sexist")
+            "cult of beauty", "women", "sexist", "suffragists")
 dj_keys <- c("disability", "autism", "blind", "deaf", "wheelchair", "ableist", "ableism")
 lgbt_keys <- c("gay", "lesbian", "queer", "transgender")
 env_keys <- c("conservation", "environmentalism", "animal", "plant", "ecosystem", "ecology", "biosystem", "water crisis",
