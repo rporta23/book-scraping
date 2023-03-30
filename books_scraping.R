@@ -259,7 +259,7 @@ ed_keys <- c("education", "teacher", "student", "university", "literacy")
 health_keys <- c("public health", "pandemic", "disease", "health care", "doctor", "nurse", "medical")
 rel_keys <- c("minister", "christian", "jesus", "religion", "church", "islam", "spirituality", "religious", "jewish", "judaism", "muslim", "hindu")
 arts_keys <- c("music", "dance", "performance", "creativity", "paint")
-war_keys <- c("war")
+war_keys <- c("war ")
 
 
 # function to check if description contains category keywords
