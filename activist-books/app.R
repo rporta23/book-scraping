@@ -8,8 +8,8 @@ gr <- readRDS(url(githubURL))
 #gr <- read_rds(here::here("data_categories.rda"))
 
 # list of categories
-categories <- c("All", "Urbanism", "Race", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
-                "Education", "Public Health", "Religion", "Arts", "Government")
+categories <- c("All", "Urbanism", "BIPOC", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",
+                "Education", "Public Health", "Religion", "Arts", "Government", "International Relations")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
