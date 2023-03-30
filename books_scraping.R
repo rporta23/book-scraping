@@ -254,11 +254,23 @@ w_keys <- c("women’s rights", "women's liberation", "women's participation", "
 dj_keys <- c("disability", "autism", "blind", "deaf", "wheelchair", "ableist", "ableism")
 lgbt_keys <- c("gay", "lesbian", "queer", "transgender")
 env_keys <- c("conservation", "environmentalism", "animal", "plant", "ecosystem", "ecology", "biosystem", "water crisis",
-              "environmental")
+              "environmental", "hurricane", "biodiversity")
 ed_keys <- c("education", "teacher", "student", "university", "literacy")
 health_keys <- c("public health", "pandemic", "disease", "health care", "doctor", "nurse", "medical")
 rel_keys <- c("minister", "christian", "jesus", "religion", "church", "islam", "spirituality", "religious", "jewish", "judaism", "muslim", "hindu")
 arts_keys <- c("music", "dance", "performance", "creativity", "paint")
+
+
+# function to check if description contains category keywords
+check_keywords_title <- function(keys, title){
+  keys_in_title <- map_lgl(keys, ~str_detect(title, .x))
+  if(TRUE %in% keys_in_title){
+    return(TRUE)
+  }
+  else{
+    return(FALSE)
+  }
+}
 
 # function to check if description contains category keywords
 check_keywords <- function(keys, description){
@@ -272,10 +284,21 @@ check_keywords <- function(keys, description){
 }
 
 # function to define category given description
-define_category <- function(description){
+define_category <- function(title, description){
+  title <- tolower(title)
   description <- tolower(description)
   category = case_when(
-    check_keywords(pm_keys, description) ~ "Urbanism",
+    check_keywords_title(lgbt_keys, title) ~ "LGBT",
+    check_keywords_title(race_keys, title) ~ "Race",
+    check_keywords_title(dj_keys, title) ~ "Disability Justice",
+    check_keywords_title(health_keys, title) ~ "Public Health",
+    check_keywords_title(env_keys, title) ~ "Environmentalism",
+    check_keywords_title(w_keys, title) ~ "Women's Rights",
+    check_keywords_title(gov_keys, title) ~ "Government",
+    check_keywords_title(rel_keys, title) ~ "Religion",
+    check_keywords_title(arts_keys, title) ~ "Arts",
+    check_keywords_title(ed_keys, title) ~ "Education",
+    check_keywords_title(pm_keys, title) ~ "Urbanism",
     check_keywords(lgbt_keys, description) ~ "LGBT",
     check_keywords(race_keys, description) ~ "Race",
     check_keywords(dj_keys, description) ~ "Disability Justice",
@@ -286,6 +309,7 @@ define_category <- function(description){
     check_keywords(rel_keys, description) ~ "Religion",
     check_keywords(arts_keys, description) ~ "Arts",
     check_keywords(ed_keys, description) ~ "Education",
+    check_keywords(pm_keys, description) ~ "Urbanism",
     TRUE ~ "Uncategorized"
   )
 
@@ -315,4 +339,14 @@ n <- data_cat3 |>
   filter(category == "Women's Rights")
 
 write_rds(data_cat4, "data_categories.rda")
+
+## redifine categories round 2 3/30/23
+
+data_books <- readRDS("data_categories.rda")
+category_new <- map2(data_books$title, data_books$description, ~define_category(.x, .y))
+
+data_books2 <- data_books |>
+  mutate(category = as.character(category_new))
+
+write_rds(data_books2, "data_categories.rda")
 
