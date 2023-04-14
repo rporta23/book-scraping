@@ -1,11 +1,19 @@
 
 library(shiny)
 library(tidyverse)
+library(googlesheets4)
+source(here::here("activist-books", "categories.R"))
 
-# read in data
+## reading in data from google sheet
+suggestions <- read_csv(here::here("activist-books", "suggestions.csv"))
+
+# read in data (from online lists)
 githubURL <- "https://github.com/rporta23/book-scraping/raw/main/data_categories.rda"
 gr <- readRDS(url(githubURL))
-#gr <- read_rds(here::here("data_categories.rda"))
+
+# combine online lists with books from suggestions spreadsheet
+gr <- gr |>
+  bind_rows(suggestions)
 
 # list of categories
 categories <- c("All", "Urbanism", "BIPOC", "Women's Rights", "Disability Justice", "LGBT","Environmentalism",

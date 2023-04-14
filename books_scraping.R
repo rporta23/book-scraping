@@ -353,3 +353,16 @@ data_books2 <- data_books |>
 
 write_rds(data_books2, "data_categories.rda")
 
+## reading in data from google sheet
+### RERUN to update suggestions!!
+library(googlesheets4)
+suggestions_data <- read_sheet("https://docs.google.com/spreadsheets/d/1j9WbbSm49T4H9xE0CHsqUiA8plcDHMHW7I0wFVfTRyk/edit?usp=sharing")
+category_suggestions <- map2(suggestions_data$title, suggestions_data$description, ~define_category(.x, .y))
+
+suggestions2 <- suggestions_data |>
+  mutate(authors = as.list(authors),
+         genres = as.list(rep("", nrow(suggestions_data))),
+         category = as.character(category_suggestions))
+
+write_csv(suggestions2, "suggestions.csv")
+
