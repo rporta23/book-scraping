@@ -5,7 +5,7 @@ library(googlesheets4)
 source(here::here("activist-books", "categories.R"))
 
 ## reading in data from google sheet
-suggestions <- read_csv(here::here("activist-books", "suggestions.csv"))
+suggestions <- read_csv("https://raw.githubusercontent.com/rporta23/book-scraping/main/activist-books/suggestions.csv")
 
 # read in data (from online lists)
 githubURL <- "https://github.com/rporta23/book-scraping/raw/main/data_categories.rda"
