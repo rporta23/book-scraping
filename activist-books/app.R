@@ -2,7 +2,7 @@
 library(shiny)
 library(tidyverse)
 library(googlesheets4)
-source(here::here("activist-books", "categories.R"))
+#source(here::here("activist-books", "categories.R"))
 
 ## reading in data from google sheet
 suggestions <- read_csv("https://raw.githubusercontent.com/rporta23/book-scraping/main/activist-books/suggestions.csv")

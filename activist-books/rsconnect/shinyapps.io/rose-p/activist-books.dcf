@@ -5,9 +5,9 @@ account: rose-p
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8538018
-bundleId: 7091156
+bundleId: 7101021
 url: https://rose-p.shinyapps.io/activist-books/
-when: 1681504314.74244
-lastSyncTime: 1681504314.74245
+when: 1681758507.74127
+lastSyncTime: 1681758507.74128
 asMultiple: FALSE
 asStatic: FALSE
